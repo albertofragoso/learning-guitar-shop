@@ -60,3 +60,11 @@ app.get('/api/users/auth', auth, (req, res, next) => {
   })
 })
 
+app.get('/api/users/logout', auth, (req, res, next) => {
+  const { _id } = req.user
+  User.findOneAndUpdate({ _id }, { token: '' }, (err, doc) => {
+    if(err) return res.json({ success: false, err })
+    return res.json(200).json({ success: true })
+  })
+})
+
