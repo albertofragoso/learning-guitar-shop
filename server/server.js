@@ -5,6 +5,7 @@ const app          = express()
 const cookieParser = require('cookie-parser')
 const mongoose     = require('mongoose')
 const User         = require('./models/User')
+const { auth }     = require('./middlewares/auth')
 
 mongoose
   .connect(process.env.DB, { useNewUrlParser: true }, err => {
@@ -20,7 +21,7 @@ const port = process.env.PORT || 3002
 
 app.listen(port, () => console.log(`The server is running on ${port} port.`))
 
-app.post('/api/user/register', (req, res, next) => {
+app.post('/api/users/register', (req, res, next) => {
   const user = new User(req.body)
   user.save((err, doc) => {
     if(err) return res.json({ success: false, err })
@@ -28,7 +29,7 @@ app.post('/api/user/register', (req, res, next) => {
   })
 })
 
-app.post('/api/user/login', (req, res, next) => {
+app.post('/api/users/login', (req, res, next) => {
 // 1. Finding out email
   const { email } = req.body
   User.findOne({ email }, (err, user) => {
@@ -44,6 +45,18 @@ app.post('/api/user/login', (req, res, next) => {
         res.cookie('guitarshop_auth', user.token).status(200).json({ logginSuccess: true })
       })
     })
+  })
+})
+
+app.get('/api/users/auth', auth, (req, res, next) => {
+  res.status(200).json({
+    isAdmin: req.user.role === 0 ? false : true,
+    isAuth: true, 
+    email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    cart: req.user.cart,
+    history: req.user.history
   })
 })
 
