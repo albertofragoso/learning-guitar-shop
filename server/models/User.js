@@ -1,7 +1,10 @@
+require('dotenv').config()
+
 const mongoose = require('mongoose')
 const { Schema } = mongoose
 const bcrypt = require('bcrypt')
 const SALT_I = 10
+const jwt = require('jsonwebtoken')
 
 const userSchema = new Schema({
   email: {
@@ -58,5 +61,22 @@ userSchema.pre('save', async function(next) {
     } 
   }
 })
+
+userSchema.methods.comparePassword = function(candidatePassword, cb) {
+  bcrypt.compare(candidatePassword, this.password, function(err, isMatch){
+    if(err) return cb(err)
+    cb(null, isMatch)
+  })
+}
+
+userSchema.methods.generateToken = async function(cb) {
+  const token = await jwt.sign(this._id.toHexString(), process.env.SECRET)
+
+  this.token = token
+  this.save((err, user) => {
+    if(err) return cb(err)
+    cb(null, user)
+  })
+}
 
 module.exports = mongoose.model('User', userSchema)
