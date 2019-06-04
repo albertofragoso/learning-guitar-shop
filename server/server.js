@@ -7,9 +7,9 @@ const mongoose     = require('mongoose')
 const User         = require('./models/User')
 
 mongoose
-  .connect('mongodb://localhost:27017/tiendaguitarras', { userNewUrlParser: true }, err => {
+  .connect('mongodb://localhost:27017/tiendaguitarras', { useNewUrlParser: true }, err => {
     if(err) return err
-    console.log('Conented to MongoDB,')
+    console.log('Conected to MongoDB.')
   })
 
 app.use(express.urlencoded({ extended: true }))

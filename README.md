@@ -411,6 +411,7 @@ app.post('/api/users/register', (req, res) => {
 }
 ```
 
+- Y bien importante, para que la peticion POST se ejecute correctamente, debemos ejecutar el demonio de MongoDB con el comando `mongod` en nuestra terminal.
 Con esto, creamos un usuario y confirmamos que aparece el documento en la base de datos. Observa que tenemos un `_id` que pertenece a MongoDB.
 
 - Revisamos las validaciones del Backend, si enviamos el mismo mail.
