@@ -111,10 +111,37 @@ app.post('/api/product/article', auth, admin, (req, res, next) => {
   })
 })
 
+app.get('/api/product/articles_by_id', (req, res, next) => {
+
+  // 1 ID
+  // /api/product/article?id=HSKKKSKS&type=arrayoijiog
+
+  // MÁS DE UN 1 ID
+  // /api/product/article?id=HSKKKSKS,akdjfañjf,kdjfalkñfja&type=array
+
+  let items = req.query.id
+  let type = req.query.type
+
+  if(type === 'array') {
+    let ids = req.query.id.split(',')
+    items = ids.map(item => mongoose.Types.ObjectId(item))
+  }
+
+  Product
+    .find({ '_id': { $in: items } })
+    .populate('brand')
+    .populate('wood')
+    .exec((err, articles) => {
+      if(err) return res.status(400).send(err)
+      res.status(200).send(articles)
+    })
+})
+
 app.get('/api/product/articles', (req, res, next) => {
 
   // BY ARRIVAL (Más nuevas)
   // /articles?sortBy=createdAt&order=desc&limit=4
+
   // BY SELL (Más Ventas)
   // /articles?sortBy=sold&order=desc&limit=4
 
@@ -124,8 +151,8 @@ app.get('/api/product/articles', (req, res, next) => {
 
   Product
     .find()
-    .populate('Brand')
-    .populate('Wood')
+    .populate('brand')
+    .populate('wood')
     .sort([[sortBy, order]])
     .limit(limit)
     .exec((err, articles) => {
