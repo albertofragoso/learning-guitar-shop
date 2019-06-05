@@ -7,6 +7,7 @@ const mongoose     = require('mongoose')
 const User         = require('./models/User')
 const Brand        = require('./models/Brand')
 const Wood         = require('./models/Wood')
+const Product      = require('./models/Product')
 const { auth }     = require('./middlewares/auth')
 const { admin }    = require('./middlewares/admin')
 
@@ -80,7 +81,7 @@ app.post('/api/product/brand', auth, admin, (req, res, next) => {
 })
 
 
-app.get('/api/products/brands', (req, res, next) => {
+app.get('/api/product/brands', (req, res, next) => {
   Brand.find({}, (err, brands) => {
     if(err) return res.status(400).send(err)
     res.status(200).send(brands)
@@ -102,3 +103,10 @@ app.get('/api/product/woods', (req, res, next) => {
   })
 })
 
+app.post('/api/product/article', auth, admin, (req, res, next) => {
+  const product = new Product(req.body)
+  product.save((err, doc) => {
+    if(err) return res.json({ success: false, err })
+    res.status(200).json({ success: true, article: doc })
+  })
+})
