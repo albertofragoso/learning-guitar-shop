@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser')
 const mongoose     = require('mongoose')
 const User         = require('./models/User')
 const Brand        = require('./models/Brand')
+const Wood         = require('./models/Wood')
 const { auth }     = require('./middlewares/auth')
 const { admin }    = require('./middlewares/admin')
 
@@ -83,6 +84,21 @@ app.get('/api/products/brands', (req, res, next) => {
   Brand.find({}, (err, brands) => {
     if(err) return res.status(400).send(err)
     res.status(200).send(brands)
-    //res.status(200).json({ brands })
   })
 })
+
+app.post('/api/product/wood', auth, admin, (req, res, next) => {
+  const wood = new Wood(req.body)
+  wood.save((err, doc) => {
+    if(err) return res.json({ success: false, err })
+    res.status(200).json({ succes: true, wood: doc })
+  })
+})
+
+app.get('/api/product/woods', (req, res, next) => {
+  Wood.find({}, (err, woods) => {
+    if(err) return res.status(400).send(err)
+    res.status(200).send(woods)
+  })
+})
+
