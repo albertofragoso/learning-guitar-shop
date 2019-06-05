@@ -5,7 +5,9 @@ const app          = express()
 const cookieParser = require('cookie-parser')
 const mongoose     = require('mongoose')
 const User         = require('./models/User')
+const Brand        = require('./models/Brand')
 const { auth }     = require('./middlewares/auth')
+const { admin }    = require('./middlewares/admin')
 
 mongoose
   .connect(process.env.DB, { useNewUrlParser: true }, err => {
@@ -68,3 +70,19 @@ app.get('/api/users/logout', auth, (req, res, next) => {
   })
 })
 
+app.post('/api/product/brand', auth, admin, (req, res, next) => {
+  const brand = new Brand(req.body)
+  brand.save((err, doc) => {
+    if(err) return res.json({ success: false, err })
+    res.status(200).json({ success: true, brand: doc })
+  })
+})
+
+
+app.get('/api/products/brands', (req, res, next) => {
+  Brand.find({}, (err, brands) => {
+    if(err) return res.status(400).send(err)
+    res.status(200).send(brands)
+    //res.status(200).json({ brands })
+  })
+})
